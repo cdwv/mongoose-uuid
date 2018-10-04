@@ -96,27 +96,31 @@ SchemaUUID.prototype.castForQuery = function ($conditional, val) {
 };
 
 module.exports = {
-  decodeUUID: (binary) => {
+    decodeUUID: (binary) => {
 
-      const len = binary.length();
-      const b = binary.read(0,len);
+        const len = binary.length();
+        const b = binary.read(0, len);
 
-      let buf = new Buffer(len);
-      for (let i = 0; i < len; i++)
-          buf[i] = b[i];
+        let buf = new Buffer(len);
 
-      let hex = '';
-      for (let i = 0; i < len; i++)
-      {
-          const n = buf.readUInt8(i);
-          if (n < 16)
-              hex += '0'+n.toString(16);
-          else
-              hex += n.toString(16);
-      }
+        for (let i = 0; i < len; i++) {
+            buf[i] = b[i];
+        }
 
-      return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
-  },
+
+        let hex = '';
+
+        for (let i = 0; i < len; i++) {
+
+            const n = buf.readUInt8(i);
+            if (n < 16)
+                hex += '0' + n.toString(16);
+            else
+                hex += n.toString(16);
+        }
+
+        return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+    },
   addUUIDToMongoose: function (mongoose){
       mongoose.Types.UUID = mongoose.SchemaTypes.UUID = SchemaUUID;
   }
