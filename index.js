@@ -98,33 +98,30 @@ SchemaUUID.prototype.castForQuery = function ($conditional, val) {
 module.exports = {
   decodeUUID: function (binary) {
       if(!binary) return undefined;
-      if(!(binary instanceof mongoose.Types.Buffer.Binary)) return binary;
 
+      let len = binary.length();
 
-      var len = binary.length();
+      let b = binary.read(0,len);
 
-      var b = binary.read(0,len);
+      let buf = new Buffer(len);
 
-      var buf = new Buffer(len);
-
-      for (var i = 0; i < len; i++)
+      for (let i = 0; i < len; i++)
           buf[i] = b[i];
 
-      var hex = '';
+      let hex = '';
 
-      for (var i = 0; i < len; i++)
+      for (let i = 0; i < len; i++)
       {
-          var n = buf.readUInt8(i);
+          let n = buf.readUInt8(i);
           if (n < 16)
               hex += '0'+n.toString(16);
           else
               hex += n.toString(16);
       }
 
-      var uuidStr = hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
-      return uuidStr;
+      return hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
   },
   addUUIDToMongoose: function (mongoose){
       mongoose.Types.UUID = mongoose.SchemaTypes.UUID = SchemaUUID;
   }
-}
+};
