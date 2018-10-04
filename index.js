@@ -96,23 +96,19 @@ SchemaUUID.prototype.castForQuery = function ($conditional, val) {
 };
 
 module.exports = {
-  decodeUUID: function (binary) {
-      if(!binary) return undefined;
+  decodeUUID: (binary) => {
 
-      let len = binary.length();
-
-      let b = binary.read(0,len);
+      const len = binary.length();
+      const b = binary.read(0,len);
 
       let buf = new Buffer(len);
-
       for (let i = 0; i < len; i++)
           buf[i] = b[i];
 
       let hex = '';
-
       for (let i = 0; i < len; i++)
       {
-          let n = buf.readUInt8(i);
+          const n = buf.readUInt8(i);
           if (n < 16)
               hex += '0'+n.toString(16);
           else
