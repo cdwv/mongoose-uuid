@@ -73,10 +73,10 @@ SchemaUUID.prototype.cast = function (value, doc, init) {
         // Handle the case where user directly sets a populated
         // path to a plain object; cast to the Model used in
         // the population query.
-        var path = doc.$__fullPath(this.path);
-        var owner = doc.ownerDocument ? doc.ownerDocument() : doc;
-        var pop = owner.populated(path, true);
-        var ret = value;
+        const path = doc.$__fullPath(this.path);
+        const owner = doc.ownerDocument ? doc.ownerDocument() : doc;
+        const pop = owner.populated(path, true);
+        let ret = value;
         if (!doc.$__.populated ||
             !doc.$__.populated[path] ||
             !doc.$__.populated[path].options ||
@@ -96,10 +96,20 @@ SchemaUUID.prototype.cast = function (value, doc, init) {
     if (value instanceof mongoose.Types.Buffer.Binary)
         return value;
 
-    var uuidBuffer;
+
+    if (value._id) {
+        if (value._id instanceof mongoose.Types.Buffer.Binary) {
+            return value._id;
+        }
+        if (typeof value._id === 'string') {
+            let uuidBuffer = new mongoose.Types.Buffer(uuid.parse(value._id));
+            uuidBuffer.subtype(bson.Binary.SUBTYPE_UUID);
+            return uuidBuffer.toObject();
+        }
+    }
 
     if (typeof value === 'string') {
-        uuidBuffer = new mongoose.Types.Buffer(uuid.parse(value));
+        let uuidBuffer = new mongoose.Types.Buffer(uuid.parse(value));
         uuidBuffer.subtype(bson.Binary.SUBTYPE_UUID);
         return uuidBuffer.toObject();
     }
