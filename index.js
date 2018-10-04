@@ -7,35 +7,6 @@ var uuid = require('node-uuid');
 
 var Document = mongoose.Document;
 
-function getter (binary){
-  if(!binary) return undefined;
-  if(!(binary instanceof mongoose.Types.Buffer.Binary)) return binary;
-
-  
-  var len = binary.length();
-
-  var b = binary.read(0,len);
-
-  var buf = new Buffer(len);
-
-  for (var i = 0; i < len; i++)
-    buf[i] = b[i];
-
-  var hex = '';
-
-  for (var i = 0; i < len; i++)
-  {
-    var n = buf.readUInt8(i);
-    if (n < 16)
-      hex += '0'+n.toString(16);
-    else
-      hex += n.toString(16);
-  }
-
-  var uuidStr = hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
-  return uuidStr;
-}
-
 function SchemaUUID(path, options){
   mongoose.SchemaTypes.Buffer.call(this, path, options);
   this.getters.push(getter);
@@ -124,6 +95,36 @@ SchemaUUID.prototype.castForQuery = function ($conditional, val) {
   }
 };
 
-module.exports = function (mongoose){
-  mongoose.Types.UUID = mongoose.SchemaTypes.UUID = SchemaUUID;
+module.exports = {
+  decodeUUID: function (binary) {
+      if(!binary) return undefined;
+      if(!(binary instanceof mongoose.Types.Buffer.Binary)) return binary;
+
+
+      var len = binary.length();
+
+      var b = binary.read(0,len);
+
+      var buf = new Buffer(len);
+
+      for (var i = 0; i < len; i++)
+          buf[i] = b[i];
+
+      var hex = '';
+
+      for (var i = 0; i < len; i++)
+      {
+          var n = buf.readUInt8(i);
+          if (n < 16)
+              hex += '0'+n.toString(16);
+          else
+              hex += n.toString(16);
+      }
+
+      var uuidStr = hex.substr(0, 8) + '-' + hex.substr(8, 4) + '-' + hex.substr(12, 4) + '-' + hex.substr(16, 4) + '-' + hex.substr(20, 12);
+      return uuidStr;
+  },
+  addUUIDToMongoose: function (mongoose){
+      mongoose.Types.UUID = mongoose.SchemaTypes.UUID = SchemaUUID;
+  }
 }
