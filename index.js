@@ -16,7 +16,7 @@ util.inherits(SchemaUUID, mongoose.SchemaTypes.Buffer);
 
 SchemaUUID.schemaName = 'UUID';
 
-SchemaUUID.prototype.decodeUUID = (binary) => {
+SchemaUUID.decodeUUID = (binary) => {
 
     const len = binary.length();
     const b = binary.read(0, len);
