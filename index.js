@@ -9,7 +9,6 @@ var Document = mongoose.Document;
 
 function SchemaUUID(path, options) {
     mongoose.SchemaTypes.Buffer.call(this, path, options);
-    this.getters.push(getter);
 }
 
 util.inherits(SchemaUUID, mongoose.SchemaTypes.Buffer);
